@@ -16,7 +16,7 @@ It's a simple tool for backing up, sharing, or further processing your Letterbox
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/JorgeH18/letterboxd-markdown.git](https://www.google.com/search?q=https://github.com/JorgeH18/letterboxd-markdown.git)
+   git clone https://github.com/JorgeH18/letterboxd-markdown.git
 
 2. Install requirements
    ```bash
