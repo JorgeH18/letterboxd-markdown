@@ -15,20 +15,6 @@ def get_movie_poster_and_review(summary):
     return image_url,review
 
 
-#def build_markdown(filename, title, movie_data):
-# Creates a Markdown file with a title, table of contents, and movie data.
-
-# Args:
-#     filename: The name of the Markdown file to create (e.g., "movies.md").
-#     title: The title of the document.
-#     movie_data: A list of dictionaries, where each dictionary represents a movie with data
-#                 For example:
-#                 [
-#                     {"title": "Movie 1", "rating": 4, "date": "2024-01-01", "review": "Great movie!"},
-#                     {"title": "Movie 2", "rating": 5, "date": "2024-01-15", "review": "Amazing!"},
-#                 ]
-
-
 def build_movie_dictionary_list(movies):
     movie_dictionary_list = []
 
@@ -48,15 +34,48 @@ def build_movie_dictionary_list(movies):
         
     return movie_dictionary_list
 
+def build_markdown(filename, title, movie_data):
+    # Creates a Markdown file with a title, table of contents, and movie data.
+
+    # Args:
+    #     filename: The name of the Markdown file to create (e.g., "movies.md").
+    #     title: The title of the document.
+    #     movie_data: A list of dictionaries, where each dictionary represents a movie with data
+    #                 For example:
+    #                 [
+    #                     {"title": "Movie 1", "rating": 3.5, "date": "2024-01-01", "review": "Great movie!"},
+    #                     {"title": "Movie 2", "rating": 5, "date": "2024-01-15", "review": "Amazing!"},
+    #                 ]
+    with open(filename, "w", encoding="utf-8") as f:  # Use utf-8 encoding
+        f.write(f"# {title}\n\n")
+
+        # Create the table of contents (using Markdown extensions)
+        f.write("[TOC]\n\n")  # Or use a library to generate it if needed
+
+        # Create the table header
+        if movie_data:  # Check if movie_data is not empty
+            header = movie_data[0].keys()  # Get keys from the first movie's dictionary
+            f.write("| " + " | ".join(header) + " |\n")
+            f.write("| " + " | ".join(["---"] * len(header)) + " |\n") # Separator line
+
+            # Populate the table rows
+            for movie in movie_data:
+                row = [str(movie.get(key, "")) for key in header]  # Handle missing keys
+                f.write("| " + " | ".join(row) + " |\n")
+
+        else:
+            f.write("No movie data available.\n")
 
 
+
+# TO DO: check if there is no rating to the review
 def main():
     rss_url = "https://letterboxd.com/jorge_h18/rss/"
     feed = feedparser.parse(rss_url)
     print("Number of movies: ", len(feed.entries))
 
-    print(build_movie_dictionary_list(feed.entries))
-    #build_markdown(movie_data)
+    movie_dictionary_list = build_movie_dictionary_list(feed.entries)
+    build_markdown("movie_reviews.md", "My Movie Reviews", movie_dictionary_list)
 
 
 if __name__=="__main__":
