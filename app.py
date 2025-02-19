@@ -44,7 +44,7 @@ def build_movie_dictionary_list(movies):
             title = movie.letterboxd_filmtitle,
             year = movie.letterboxd_filmyear,
             #movie_id = movie.tmdb_movieid,
-            rating = get_rating(movie.letterboxd_memberrating), #transforming to stars
+            rating = get_rating(getattr(movie, "letterboxd_memberrating", "0")), #transforming to stars and handling if there is no rating on the review
             watched_date = movie.letterboxd_watcheddate,
             rewatch = movie.letterboxd_rewatch,
             review = movie_poster_and_review[1],
@@ -82,7 +82,7 @@ def build_markdown(filename, title, movie_data):
                     if key == "poster":
                         poster_url = movie.get(key, "")
                         #markdown_image = f"![{title}]({poster_url})" # Markdown image format
-                        markdown_image = f'<img src="{poster_url}" width="100em" height="150em">' # HTML image format
+                        markdown_image = f'<img src="{poster_url}" width="100px" height="150px">' # HTML image format
                         row.append(markdown_image)
 
                     # Special handling for the 'watched date' column for specify if is a rewatch
@@ -103,7 +103,7 @@ def build_markdown(filename, title, movie_data):
 
 # TO DO: check if there is no rating to the review
 def main():
-    rss_url = "https://letterboxd.com/jorge_h18/rss/"
+    rss_url = "https://letterboxd.com/ainhoaacs/rss/"
     feed = feedparser.parse(rss_url)
     print("Number of movies: ", len(feed.entries))
 

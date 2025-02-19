@@ -12,6 +12,9 @@ It's a simple tool for backing up, sharing, or further processing your Letterbox
 * Creates an index Markdown file for the films you've logged.
 * Includes key information like film title, rating, date watched, and review.
 
+### Diclaimer
+By the use of the RSS feed, the output is limited to the last 50 reviews.
+
 ## Installation
 
 1. Clone the repository:
