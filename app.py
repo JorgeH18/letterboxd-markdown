@@ -82,7 +82,7 @@ def build_markdown(filename, title, movie_data):
                     if key == "poster":
                         poster_url = movie.get(key, "")
                         #markdown_image = f"![{title}]({poster_url})" # Markdown image format
-                        markdown_image = f'<img src="{poster_url}" width="90px" height="135px">' # HTML image format
+                        markdown_image = f'<img src="{poster_url}" width="100em" height="150em">' # HTML image format
                         row.append(markdown_image)
 
                     # Special handling for the 'watched date' column for specify if is a rewatch
