@@ -1,4 +1,6 @@
+# Imports
 import feedparser, re
+from datetime import datetime
 
 def get_movie_poster_and_review(summary):
     # Extract the image URL using regular expressions
@@ -30,8 +32,14 @@ def get_rating(number_rating):
     }
 
     number_rating_str = str(number_rating)
-    star_rating = const_number_to_stars.get(number_rating_str, "None")
+    star_rating = const_number_to_stars.get(number_rating_str, " ")
     return star_rating
+
+
+def format_date(date_str):
+    # Reformats date from YYYY-MM-DD to DD/MM/YYYY.
+    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    return date_obj.strftime("%d/%m/%Y")
 
 
 def build_movie_dictionary_list(movies):
@@ -45,7 +53,7 @@ def build_movie_dictionary_list(movies):
             year = movie.letterboxd_filmyear,
             #movie_id = movie.tmdb_movieid,
             rating = get_rating(getattr(movie, "letterboxd_memberrating", "0")), #transforming to stars and handling if there is no rating on the review
-            watched_date = movie.letterboxd_watcheddate,
+            watched_date = format_date(movie.letterboxd_watcheddate),
             rewatch = movie.letterboxd_rewatch,
             review = movie_poster_and_review[1],
             review_link = movie.link
@@ -101,13 +109,26 @@ def build_markdown(filename, title, movie_data):
             f.write("No movie data available.\n")
 
 
-# TO DO: check if there is no rating to the review
-def main():
-    rss_url = "https://letterboxd.com/ainhoaacs/rss/"
+def get_diary_entries(rss_url):
+    #Parses the Letterboxd RSS feed and returns only diary entries (films).
     feed = feedparser.parse(rss_url)
-    print("Number of movies: ", len(feed.entries))
+    diary_entries = []
 
-    movie_dictionary_list = build_movie_dictionary_list(feed.entries)
+    for entry in feed.entries:
+        # Check for the presence of a 'movieid' or similar identifier that only films have.
+        if hasattr(entry, 'tmdb_movieid'):
+            diary_entries.append(entry)
+
+    return diary_entries
+
+
+def main():
+    # Example usage:
+    rss_url = "https://letterboxd.com/jorge_h18/rss/"  # Replace with your actual RSS URL
+    diary_entries = get_diary_entries(rss_url) # Get only diary entries
+    print("Number of movies: ", len(diary_entries))
+
+    movie_dictionary_list = build_movie_dictionary_list(diary_entries)
     build_markdown("letterboxd-diary.md", "Watched Movies", movie_dictionary_list)
 
 
