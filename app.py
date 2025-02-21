@@ -1,9 +1,9 @@
-# Imports
+# Imports necessary libraries
 import feedparser, re
 from datetime import datetime
 
+# Extracts poster URL and review text from a movie summary using RegEx
 def get_movie_poster_and_review(summary):
-    # Extract the image URL using regular expressions
     image_match = re.search(r'<img src="(.*?)"', summary)
     if image_match:
         image_url = image_match.group(1)
@@ -16,7 +16,7 @@ def get_movie_poster_and_review(summary):
     review = re.sub(r'<.*?>', '', review).strip()  # Removes all HTML tags
     return image_url,review
 
-
+# Converts numeric rating to star symbols.
 def get_rating(number_rating):
     const_number_to_stars = {
         "0.5": "½",
@@ -35,13 +35,12 @@ def get_rating(number_rating):
     star_rating = const_number_to_stars.get(number_rating_str, " ")
     return star_rating
 
-
+ # Reformats date from YYYY-MM-DD to DD/MM/YYYY.
 def format_date(date_str):
-    # Reformats date from YYYY-MM-DD to DD/MM/YYYY.
     date_obj = datetime.strptime(date_str, "%Y-%m-%d")
     return date_obj.strftime("%d/%m/%Y")
 
-
+# Builds a list of movie dictionaries from RSS feed entries.
 def build_movie_dictionary_list(movies):
     movie_dictionary_list = []
 
@@ -52,7 +51,7 @@ def build_movie_dictionary_list(movies):
             title = movie.letterboxd_filmtitle,
             year = movie.letterboxd_filmyear,
             #movie_id = movie.tmdb_movieid,
-            rating = get_rating(getattr(movie, "letterboxd_memberrating", "0")), #transforming to stars and handling if there is no rating on the review
+            rating = get_rating(getattr(movie, "letterboxd_memberrating", "0")), # Handling if there is no rating on the review
             watched_date = format_date(movie.letterboxd_watcheddate),
             rewatch = movie.letterboxd_rewatch,
             review = movie_poster_and_review[1],
@@ -61,20 +60,15 @@ def build_movie_dictionary_list(movies):
         
     return movie_dictionary_list
 
-
-def build_markdown(filename, title, movie_data):
-    # Creates a Markdown file with a title, table of contents, and movie data.
-
+# Builds a Markdown file from movie data.
     # Args:
     #     filename: The name of the Markdown file to create (e.g., "movies.md").
     #     title: The title of the document.
     #     movie_data: A list of dictionaries, where each dictionary represents a movie with data
-
+def build_markdown(filename, title, movie_data):
     with open(filename, "w", encoding="utf-8") as f:  # Use utf-8 encoding
         f.write(f"# {title}\n\n")
 
-        # Create the table of contents (using Markdown extensions)
-        # Create the table header
         if movie_data:  # Check if movie_data is not empty
             header = movie_data[0].keys()  # Get keys from the first movie's dictionary
             # Filter out "rewatch" from the header
@@ -108,9 +102,8 @@ def build_markdown(filename, title, movie_data):
         else:
             f.write("No movie data available.\n")
 
-
+#Parses the Letterboxd RSS feed and returns only diary entries (films).
 def get_diary_entries(rss_url):
-    #Parses the Letterboxd RSS feed and returns only diary entries (films).
     feed = feedparser.parse(rss_url)
     diary_entries = []
 
@@ -125,7 +118,7 @@ def get_diary_entries(rss_url):
 def main():
     # Example usage:
     rss_url = "https://letterboxd.com/jorge_h18/rss/"  # Replace with your actual RSS URL
-    diary_entries = get_diary_entries(rss_url) # Get only diary entries
+    diary_entries = get_diary_entries(rss_url)
     print("Number of movies: ", len(diary_entries))
 
     movie_dictionary_list = build_movie_dictionary_list(diary_entries)
